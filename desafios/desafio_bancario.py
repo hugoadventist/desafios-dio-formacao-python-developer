@@ -1,4 +1,6 @@
 # Desafio Python Developer - DIO
+"""exemplo
+"""
 menu = """
 
 [d] Depositar
