@@ -4,7 +4,7 @@ import currencies
 
 app = FastAPI()
 
-currencies_path = currencies
+currencies_path = currencies.parser_currencies()
 
 
 @app.get("/api/convert/BRL/{valor}")
