@@ -1,23 +1,23 @@
 from fastapi import FastAPI
 import aiohttp
-import asyncio
-import json
 
 app = FastAPI()
 
 
 @app.get("/api/convert/BRL/{valor}")
-async def converter_valor(valor: float):
-    valor = float(valor)
+async def converter_valor(valor: float, moedas: str = "BRL-USD,BRL-EUR,BRL-INR"):
+    if moedas:
+        moedas += ",BRL-USD,BRL-EUR,BRL-INR"
     async with aiohttp.ClientSession() as session:
         async with session.get(
-            "https://economia.awesomeapi.com.br/last/BRL-USD,BRL-EUR,BRL-INR"
+            "https://economia.awesomeapi.com.br/last/" + moedas
         ) as resp:
             print(resp.status)
             exchange_json = await resp.json()
 
     # exchange_json = json.dumps(resp, sort_keys=False, indent=4)
-    currency_list = ["BRLUSD", "BRLEUR", "BRLINR"]
+    currency_list = moedas.replace("-", "").split(",")
+    print(currency_list)
     exchange_rates = {}
     for currency in currency_list:
         exchange_rates[currency] = exchange_json[currency]["bid"]
