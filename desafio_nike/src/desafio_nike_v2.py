@@ -1,24 +1,42 @@
-from fastapi import FastAPI, Response, status
+"""API to convert currencies at BRL to another one.
+
+Returns:
+    dict: a json file currencies converted from BRL.
+"""
+from fastapi import FastAPI
 import aiohttp
-from aiohttp import web
 import uvicorn
 
 app = FastAPI()
 
 
-def transformar_entrada(entradas: str):
+def transformar_entrada(entradas: str) -> list:
+    """Receive a string, extract all hyphens and returns a list with each element that
+    is separated by commas.
+
+    Returns:
+       list: list of currencies to convert.
+    """
+
     saidas = entradas.replace("-", "").split(",")
     return saidas
 
 
-def extrair_dados_json(json_file: dict, coins: list, key: str):
-    exchange_rates = {}
+def extrair_dados_json(json_file: dict, coins: list, key: str) -> dict:
+    """Extract data of a json file and return a new json
+
+    Returns:
+        dict: data with currency exchanges.
+    """
+    new_json_file = {}
     for currency in coins:
-        exchange_rates[currency] = json_file[currency][key]
-    return exchange_rates
+        new_json_file[currency] = json_file[currency][key]
+    return new_json_file
 
 
-def converter_valores(value: float, last_exchange: dict):
+def converter_valores(value: float, last_exchange: dict) -> dict:
+    """Convert currency values of a json file and return the json with
+    desired conversion."""
     for currency in last_exchange:
         last_exchange[currency] = float(last_exchange[currency])
         last_exchange[currency] *= value
@@ -26,7 +44,18 @@ def converter_valores(value: float, last_exchange: dict):
 
 
 @app.get("/api/convert/BRL/{valor}", status_code=200)
-async def receber_valor(valor: float, moedas: str = "BRL-USD,BRL-EUR,BRL-INR"):
+async def receber_valor(valor: float, moedas: str = "BRL-USD,BRL-EUR,BRL-INR") -> dict:
+    """Receive the path parameter and default to query parameter containing
+    "BRL-USD,BRL-EUR,BRL-INR".
+
+    Args:
+        valor (float): Value in R$ to convert.
+        moedas (str, optional): the query parameter with desired currencies.
+        Defaults to "BRL-USD,BRL-EUR,BRL-INR".
+
+    Returns:
+        dict: the json file with currency conversion done.
+    """
     if moedas:
         moedas += ",BRL-USD,BRL-EUR,BRL-INR"
 
