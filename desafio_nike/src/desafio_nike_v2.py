@@ -10,7 +10,7 @@ import uvicorn
 app = FastAPI()
 
 
-def transformar_entrada(entradas: str) -> list:
+def transformar_entrada(entradas: str | dict) -> list:
     """Receive a string, extract all hyphens and returns a list with each element that
     is separated by commas.
 
@@ -83,7 +83,3 @@ async def receber_valor(valor: float, moedas: str = "BRL-USD,BRL-EUR,BRL-INR") -
 
 if __name__ == "__main__":
     uvicorn.run(app, port=8000)
-
-# exchanges = aiohttp.request(
-#     "GET", "https://economia.awesomeapi.com.br/last/BRL-USD,BRL-EUR,BRL-INR"
-# )
