@@ -1,2 +1,2 @@
-# desafios-dio-formacao-python-developer
- Desafios realizados na formação python developer da DIO
+# desafios-nike
+ API desenvolvida com base no desafio da Nike.
