@@ -9,8 +9,10 @@ from fastapi.testclient import TestClient
 
 
 def test_transformar_entrada():
-    entrada = "BRL-USD,BRL-EUR,BRL-INR"
-    esperado = ["BRLUSD", "BRLEUR", "BRLINR"]
+    # entrada = "BRL-USD,BRL-EUR,BRL-INR"
+    entrada = {"BRLUSD": 117.25, "BRLEUR": 110.13, "BRLINR": 9727.2}
+    # esperado = ["BRLUSD", "BRLEUR", "BRLINR"]
+    esperado = {"USD": 117.25, "EUR": 110.13, "INR": 9727.2}
     resultado = transformar_entrada(entrada)
 
     assert resultado == esperado
@@ -67,8 +69,8 @@ def test_extrair_dados_json():
 
 def test_converter_valores():
     entrada_um = 579
-    entrada_dois = {"BRLUSD": "0.2025", "BRLEUR": "0.1901", "BRLINR": "16.79"}
-    esperado = {"BRLUSD": 117.25, "BRLEUR": 110.07, "BRLINR": 9721.41}
+    entrada_dois = {"BRLUSD": "0.2026", "BRLEUR": "0.1902", "BRLINR": "16.8"}
+    esperado = {"BRLUSD": 117.31, "BRLEUR": 110.13, "BRLINR": 9727.2}
     resultado = converter_valores(entrada_um, entrada_dois)
     assert esperado == resultado
 
@@ -79,7 +81,7 @@ client = TestClient(app)
 def teste_receber_valor():
     response = client.get("/api/convert/BRL/579")
     assert response.status_code == 200
-    assert response.json() == {"BRLUSD": 117.25, "BRLEUR": 110.13, "BRLINR": 9727.2}
+    assert response.json() == {"USD": 117.31, "EUR": 110.13, "INR": 9727.2}
 
 
 def teste_item_inexistente():

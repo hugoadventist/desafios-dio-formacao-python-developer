@@ -10,16 +10,20 @@ import uvicorn
 app = FastAPI()
 
 
-def transformar_entrada(entradas: str | dict) -> list:
+def transformar_entrada(entradas: str | dict) -> list | dict:
     """Receive a string, extract all hyphens and returns a list with each element that
     is separated by commas.
 
     Returns:
        list: list of currencies to convert.
+       dict: list of currencies converted.
     """
-
-    saidas = entradas.replace("-", "").split(",")
-    return saidas
+    if isinstance(entradas, str):
+        output = entradas.replace("-", "").split(",")
+    if isinstance(entradas, dict):
+        new_keys = [key.replace("BRL", "") for key in entradas]
+        output = dict(zip(new_keys, entradas.values()))
+    return output
 
 
 def extrair_dados_json(json_file: dict, coins: list, key: str) -> dict:
@@ -28,15 +32,17 @@ def extrair_dados_json(json_file: dict, coins: list, key: str) -> dict:
     Returns:
         dict: data with currency exchanges.
     """
-    new_json_file = {}
-    for currency in coins:
-        new_json_file[currency] = json_file[currency][key]
-    return new_json_file
+
+    return {currency: json_file[currency][key] for currency in coins}
 
 
 def converter_valores(value: float, last_exchange: dict) -> dict:
     """Convert currency values of a json file and return the json with
-    desired conversion."""
+    desired conversion.
+
+    Returns:
+        dict: the values of currencies converted.
+    """
     for currency in last_exchange:
         last_exchange[currency] = float(last_exchange[currency])
         last_exchange[currency] *= value
@@ -76,7 +82,7 @@ async def receber_valor(valor: float, moedas: str = "BRL-USD,BRL-EUR,BRL-INR") -
 
     print("Valor total: ", valores_moedas)
 
-    valores_convertidos = converter_valores(valor, valores_moedas)
+    valores_convertidos = transformar_entrada(converter_valores(valor, valores_moedas))
 
     return valores_convertidos
 
