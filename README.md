@@ -1,2 +1,2 @@
-# desafios-nike
- API desenvolvida com base no desafio da Nike.
+# desafio-nike
+API desenvolvida com base no desafio da Nike.
