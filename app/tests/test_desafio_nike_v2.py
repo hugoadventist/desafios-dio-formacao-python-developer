@@ -1,25 +1,34 @@
-from src.desafio_nike_v2 import (
-    transformar_entrada,
-    extrair_dados_json,
-    converter_valores,
-    app,
-)
-
 from fastapi.testclient import TestClient
+from ..src.routers.convert import app
+from ..src.service.services import *
+
+client = TestClient(app)
 
 
-def test_transformar_entrada():
+def teste_read_value():
+    response = client.get("/api/convert/BRL/579")
+    assert response.status_code == 200
+    assert response.json() == {"USD": 117.31, "EUR": 110.13, "INR": 9727.2}
+
+
+def teste__item_inexist():
+    response = client.get("/api/convert/USD/579")
+    assert response.status_code == 404
+    assert response.json() == {"detail": "Not Found"}
+
+
+def test_transform_input():
     # entrada = "BRL-USD,BRL-EUR,BRL-INR"
-    entrada = {"BRLUSD": 117.25, "BRLEUR": 110.13, "BRLINR": 9727.2}
+    input_one = {"BRLUSD": 117.25, "BRLEUR": 110.13, "BRLINR": 9727.2}
     # esperado = ["BRLUSD", "BRLEUR", "BRLINR"]
-    esperado = {"USD": 117.25, "EUR": 110.13, "INR": 9727.2}
-    resultado = transformar_entrada(entrada)
+    expect = {"USD": 117.25, "EUR": 110.13, "INR": 9727.2}
+    result = transform_input(input_one)
 
-    assert resultado == esperado
+    assert result == expect
 
 
-def test_extrair_dados_json():
-    entrada_um = {
+def test_extract_json():
+    input_one = {
         "BRLUSD": {
             "code": "BRL",
             "codein": "USD",
@@ -60,31 +69,16 @@ def test_extrair_dados_json():
             "create_date": "2023-09-22 02:29:49",
         },
     }
-    entrada_dois = ["BRLUSD", "BRLEUR", "BRLINR"]
-    entrada_tres = "bid"
-    esperado = {"BRLUSD": "0.2025", "BRLEUR": "0.1901", "BRLINR": "16.79"}
-    resultado = extrair_dados_json(entrada_um, entrada_dois, entrada_tres)
-    assert esperado == resultado
+    input_two = ["BRLUSD", "BRLEUR", "BRLINR"]
+    input_three = "bid"
+    expect = {"BRLUSD": "0.2025", "BRLEUR": "0.1901", "BRLINR": "16.79"}
+    result = extract_json(input_one, input_two, input_three)
+    assert expect == result
 
 
 def test_converter_valores():
-    entrada_um = 579
-    entrada_dois = {"BRLUSD": "0.2026", "BRLEUR": "0.1902", "BRLINR": "16.8"}
-    esperado = {"BRLUSD": 117.31, "BRLEUR": 110.13, "BRLINR": 9727.2}
-    resultado = converter_valores(entrada_um, entrada_dois)
-    assert esperado == resultado
-
-
-client = TestClient(app)
-
-
-def teste_receber_valor():
-    response = client.get("/api/convert/BRL/579")
-    assert response.status_code == 200
-    assert response.json() == {"USD": 117.31, "EUR": 110.13, "INR": 9727.2}
-
-
-def teste_item_inexistente():
-    response = client.get("/api/convert/USD/579")
-    assert response.status_code == 404
-    assert response.json() == {"detail": "Not Found"}
+    input_one = 579
+    input_two = {"BRLUSD": "0.2026", "BRLEUR": "0.1902", "BRLINR": "16.8"}
+    expect = {"BRLUSD": 117.31, "BRLEUR": 110.13, "BRLINR": 9727.2}
+    result = convert_values(input_one, input_two)
+    assert expect == result

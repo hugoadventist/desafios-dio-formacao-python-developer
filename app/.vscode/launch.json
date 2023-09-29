@@ -17,7 +17,7 @@
       "type": "python",
       "request": "launch",
       "module": "uvicorn",
-      "args": ["src.desafio_nike_v2:app", "--reload"],
+      "args": ["app.main:app", "--reload"],
       "jinja": true,
       "justMyCode": true
     },
