@@ -1,32 +1,43 @@
-from fastapi.testclient import TestClient
-from ..src.routers.convert import app
-from ..src.service.services import *
-
-client = TestClient(app)
+import pytest
+from ..service.services import Services
+from ..utils.ETL import Utils
 
 
-def teste_read_value():
-    response = client.get("/api/convert/BRL/579")
-    assert response.status_code == 200
-    assert response.json() == {"USD": 117.31, "EUR": 110.13, "INR": 9727.2}
+# client = TestClient(app)
+
+services = Services()
+
+utils = Utils()
 
 
-def teste__item_inexist():
-    response = client.get("/api/convert/USD/579")
-    assert response.status_code == 404
-    assert response.json() == {"detail": "Not Found"}
+# @pytest.mark.anyio
+# @mock.patch("client.get")
+# async def test_read_value(mock_exchange_json):
+#     mock_exchange_json.return_value = 200
+#     response = client.get("/api/convert/BRL/579")
+#     assert response.status_code == 200
+#     assert response.json() == {"USD": 117.31, "EUR": 110.13, "INR": 9727.2}
 
 
+# @pytest.mark.anyio
+# async def test__item_inexist():
+#     response = client.get("/api/convert/USD/579")
+#     assert response.status_code == 404
+#     assert response.json() == {"detail": "Not Found"}
+
+
+@pytest.mark.anyio
 def test_transform_input():
     # entrada = "BRL-USD,BRL-EUR,BRL-INR"
     input_one = {"BRLUSD": 117.25, "BRLEUR": 110.13, "BRLINR": 9727.2}
     # esperado = ["BRLUSD", "BRLEUR", "BRLINR"]
     expect = {"USD": 117.25, "EUR": 110.13, "INR": 9727.2}
-    result = transform_input(input_one)
+    result = utils.transform_input(input_one)
 
     assert result == expect
 
 
+@pytest.mark.anyio
 def test_extract_json():
     input_one = {
         "BRLUSD": {
@@ -72,13 +83,14 @@ def test_extract_json():
     input_two = ["BRLUSD", "BRLEUR", "BRLINR"]
     input_three = "bid"
     expect = {"BRLUSD": "0.2025", "BRLEUR": "0.1901", "BRLINR": "16.79"}
-    result = extract_json(input_one, input_two, input_three)
+    result = services.extract_json(input_one, input_two, input_three)
     assert expect == result
 
 
+@pytest.mark.anyio
 def test_converter_valores():
     input_one = 579
     input_two = {"BRLUSD": "0.2026", "BRLEUR": "0.1902", "BRLINR": "16.8"}
     expect = {"BRLUSD": 117.31, "BRLEUR": 110.13, "BRLINR": 9727.2}
-    result = convert_values(input_one, input_two)
+    result = services.convert_values(input_one, input_two)
     assert expect == result

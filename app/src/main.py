@@ -5,10 +5,11 @@ Returns:
 """
 from fastapi import FastAPI
 import uvicorn
-from src.routers import convert
+from . import convert
 
 app = FastAPI()
 
+app.include_router(convert.router)
 
 if __name__ == "__main__":
-    uvicorn.run(convert.app, port=8000)
+    uvicorn.run(app, port=8000)
