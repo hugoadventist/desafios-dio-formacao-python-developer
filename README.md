@@ -22,6 +22,7 @@ INR: 7.318,93 (Índia)
 
 Exemplo de interface de um serviço para conversão de R$ 529,00 para as demais moedas:
 
+```HTTP
 GET /api/convert/BRL/529
 Resposta:
 {
@@ -29,6 +30,8 @@ Resposta:
 "EUR": 83.26,
 "INR": 7318.93
 }
+```
+
 Este é apenas um exemplo, fique à vontade para alterar detalhes conforme necessidades que você encontre / precise, mas não
 precisa ir muito além disso.
 Pontos para levar em consideração:
